@@ -4,10 +4,15 @@ service: apollo-lambda
 provider:
   name: aws
   runtime: nodejs8.10
+  package:
+    exclude:
+    - ./**
+    include:
+    - dist/**
 functions:
   graphql:
     # this is formatted as <FILENAME>.<HANDLER>
-    handler: graphql.graphqlHandler
+    handler: lib/graphql.graphqlHandler
     events:
     - http:
         path: graphql

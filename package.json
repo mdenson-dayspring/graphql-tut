@@ -4,7 +4,17 @@
   "description": "Tutorial creating a GraphQL server on AWS Lambda.",
   "main": "graphql.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --config jestconfig.json",
+    "test:watch": "jest --config jestconfig.json --watch",
+    "build": "tsc",
+    "deploy": "npm run prepare && serverless deploy",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -15,6 +25,18 @@
   "dependencies": {
     "@dayspringpartners/remind": "^1.0.2",
     "apollo-server-lambda": "^2.9.9",
+    "aws-sdk": "^2.594.0",
     "graphql": "^14.5.8"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.39",
+    "@types/jest": "^24.0.23",
+    "@types/node": "^12.12.8",
+    "jest": "^24.9.0",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.1.0",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.7.2"
   }
 }

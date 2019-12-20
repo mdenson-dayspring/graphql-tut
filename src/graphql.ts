@@ -1,9 +1,9 @@
-// graphql.js
+import { dateToDaynum, parser, todaysReminders } from '@dayspringpartners/remind';
+import { ApolloServer } from 'apollo-server-lambda';
+import * as S3 from 'aws-sdk/clients/s3';
+import gql from 'graphql-tag';
 
-const { ApolloServer, gql } = require("apollo-server-lambda");
-const { dateToDaynum, parser, todaysReminders } = require("@dayspringpartners/remind");
-var AWS = require("aws-sdk");
-const s3 = new AWS.S3();
+const s3 = new S3();
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
@@ -22,24 +22,24 @@ const typeDefs = gql`
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    hello: () => "Hello world!",
-    reminders: (obj, args, context, info) => {
+    hello: () => 'Hello world!',
+    reminders: (obj: any, args: any, context: any, info: any) => {
       return new Promise((resolver, reject) => {
         s3.getObject(
           {
-            Bucket: "mdenson-general",
-            Key: "reminders"
+            Bucket: 'mdenson-general',
+            Key: 'reminders'
           },
-          function(err, data) {
+          (err: any, data: any) => {
             if (err) {
               reject(err);
             } else {
-              var reminders = [];
+              let reminders = [];
               if (args.today) {
-                console.log('Argument ' + args.today + ' ' + new Date(args.today))
-                reminders = todaysReminders(data.Body.toString("utf8"), dateToDaynum(new Date(args.today)));
+                // console.log('Argument ' + args.today + ' ' + new Date(args.today))
+                reminders = todaysReminders(data.Body.toString('utf8'), dateToDaynum(new Date(args.today)));
               } else {
-                reminders = parser(data.Body.toString("utf8"));
+                reminders = parser(data.Body.toString('utf8'));
               }
               resolver(reminders);
             }
@@ -54,7 +54,7 @@ const server = new ApolloServer({ typeDefs, resolvers });
 
 exports.graphqlHandler = server.createHandler({
   cors: {
-    origin: "*",
-    credentials: true
+    credentials: true,
+    origin: '*'
   }
 });
